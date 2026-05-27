@@ -1,0 +1,48 @@
+{
+  "name": "cliniq-desktop",
+  "version": "1.0.0",
+  "description": "ClinIQ Clinic Management Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start":       "electron .",
+    "build:win":   "electron-builder --win --x64",
+    "build:mac":   "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "build":       "electron-builder --win --x64"
+  },
+  "build": {
+    "appId":       "com.cliniq.desktop",
+    "productName": "ClinIQ",
+    "copyright":   "ClinIQ Clinic Management",
+    "win": {
+      "target": "nsis",
+      "icon":   "assets/icon.ico"
+    },
+    "mac": {
+      "target":   "dmg",
+      "icon":     "assets/icon.icns",
+      "category": "public.app-category.medical"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon":   "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick":                          false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut":             true,
+      "createStartMenuShortcut":           true,
+      "shortcutName":                      "ClinIQ"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "assets/**",
+      "frontend/dist/**"
+    ]
+  },
+  "devDependencies": {
+    "electron":         "^28.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}

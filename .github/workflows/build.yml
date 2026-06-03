@@ -10,14 +10,34 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout cliniq-desktop
+        uses: actions/checkout@v4
+
+      - name: Checkout frontend source
+        uses: actions/checkout@v4
+        with:
+          repository: Phyvscode/cliniq-smart-clinic-flow-main
+          path: cliniq-source
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Build frontend
+        working-directory: cliniq-source/frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Copy frontend dist
+        run: |
+          New-Item -ItemType Directory -Force frontend\dist
+          Copy-Item -Recurse -Force cliniq-source\frontend\dist\* frontend\dist\
+        shell: powershell
+
+      - name: Install Electron dependencies
         run: npm install
 
       - name: Build Windows installer
@@ -31,18 +51,36 @@ jobs:
         with:
           name: ClinIQ-Windows
           path: dist/*.exe
+          retention-days: 30
 
   build-mac:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout cliniq-desktop
+        uses: actions/checkout@v4
+
+      - name: Checkout frontend source
+        uses: actions/checkout@v4
+        with:
+          repository: Phyvscode/cliniq-smart-clinic-flow-main
+          path: cliniq-source
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Build frontend
+        working-directory: cliniq-source/frontend
+        run: |
+          npm install
+          npm run build
+
+      - name: Copy frontend dist
+        run: cp -r cliniq-source/frontend/dist frontend/dist
+
+      - name: Install Electron dependencies
         run: npm install
 
       - name: Build Mac DMG
@@ -56,3 +94,4 @@ jobs:
         with:
           name: ClinIQ-Mac
           path: dist/*.dmg
+          retention-days: 30

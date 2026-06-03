@@ -15,17 +15,17 @@ function createWindow() {
     minHeight: 600,
     title:     "ClinIQ",
     show:      false,
-    autoHideMenuBar: true,   // hide menu bar
-    menuBarVisible:  false,  // ensure hidden
+    autoHideMenuBar: true,
+    menuBarVisible:  false,
     webPreferences: {
-      nodeIntegration:    false,
-      contextIsolation:   true,
-      devTools:           false,  // disable Ctrl+Shift+I
-      preload:            path.join(__dirname, "preload.js"),
+      nodeIntegration:       false,
+      contextIsolation:      true,
+      devTools:              false,
+      backgroundThrottling:  false,   // CRITICAL: prevents input freeze after idle
+      preload:               path.join(__dirname, "preload.js"),
     },
   });
 
-  // Remove menu on the window instance too
   mainWindow.setMenuBarVisibility(false);
   mainWindow.setMenu(null);
 
@@ -42,7 +42,7 @@ function createWindow() {
     mainWindow.maximize();
   });
 
-  // Block opening DevTools via keyboard
+  // Block DevTools keyboard shortcuts
   mainWindow.webContents.on("before-input-event", (event, input) => {
     if (
       (input.control && input.shift && input.key.toLowerCase() === "i") ||
@@ -51,6 +51,20 @@ function createWindow() {
     ) {
       event.preventDefault();
     }
+  });
+
+  // Auto-recover if renderer crashes
+  mainWindow.webContents.on("render-process-gone", (_event, details) => {
+    console.error("Renderer crashed:", details.reason);
+    if (["crashed", "oom", "launch-failed"].includes(details.reason)) {
+      mainWindow.reload();
+    }
+  });
+
+  // Auto-recover if window becomes unresponsive
+  mainWindow.on("unresponsive", () => {
+    console.warn("Window unresponsive — reloading...");
+    mainWindow.reload();
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -62,7 +76,12 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // Disable hardware acceleration throttle
+  app.commandLine.appendSwitch("disable-renderer-backgrounding");
+  app.commandLine.appendSwitch("disable-background-timer-throttling");
+
   createWindow();
+
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });

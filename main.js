@@ -42,8 +42,14 @@ function createWindow() {
     mainWindow.maximize();
   });
 
-  // Block DevTools keyboard shortcuts
+  // Keyboard shortcuts
   mainWindow.webContents.on("before-input-event", (event, input) => {
+    // F5 or Ctrl+R → reload
+    if (input.key === "F5" || (input.control && input.key.toLowerCase() === "r")) {
+      mainWindow.webContents.reload();
+      return;
+    }
+    // Block DevTools shortcuts
     if (
       (input.control && input.shift && input.key.toLowerCase() === "i") ||
       (input.control && input.shift && input.key.toLowerCase() === "j") ||

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, Menu } = require("electron");
+const { app, BrowserWindow, shell, Menu, session } = require("electron");
 const path = require("path");
 const url  = require("url");
 
@@ -81,10 +81,13 @@ function createWindow() {
   mainWindow.on("closed", () => { mainWindow = null; });
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Disable hardware acceleration throttle
   app.commandLine.appendSwitch("disable-renderer-backgrounding");
   app.commandLine.appendSwitch("disable-background-timer-throttling");
+
+  // Always load fresh files — clear Chromium's disk cache on every launch
+  await session.defaultSession.clearCache();
 
   createWindow();
 

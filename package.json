@@ -2,6 +2,7 @@
   "name": "cliniq-desktop",
   "version": "1.0.0",
   "description": "ClinIQ Clinic Management Desktop App",
+  "author": "ClinIQ",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

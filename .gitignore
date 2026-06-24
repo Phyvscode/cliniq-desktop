@@ -1,4 +1,9 @@
 node_modules/
 dist/
-frontend/dist/
 .env
+
+# frontend/dist is intentionally committed: GitHub Actions builds the
+# macOS .dmg from this repo alone and has no access to the private
+# frontend repo, so the prebuilt bundle must travel with this repo.
+!frontend/dist/
+!frontend/dist/**

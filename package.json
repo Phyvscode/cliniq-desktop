@@ -22,7 +22,8 @@
     "mac": {
       "target": "dmg",
       "icon": "assets/icon.icns",
-      "category": "public.app-category.medical"
+      "category": "public.app-category.medical",
+      "arch": ["universal"]
     },
     "linux": {
       "target": "AppImage",
